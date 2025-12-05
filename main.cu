@@ -8,7 +8,9 @@
 #include "vector.h"
 #include "config.h"
 #include "planets.h"
-#include "compute.h"
+
+// CUDA version of the compute() function, originally in compute.h
+void compute(vector3 * d_acceleration, vector3 *d_velocity, vector3 *d_position, double *d_mass);
 
 // Global host pointers
 vector3 *hVel;
@@ -152,7 +154,7 @@ int main(int argc, char **argv)
     int t_now;
 
     srand(1234);
-    initHostMemory(NUMENTITIES);
+    initHostMemory();
 
     // Initialize host-side system
     planetFill();
@@ -164,8 +166,8 @@ int main(int argc, char **argv)
 #endif
 
     // Initialize and copy to device
-    initDeviceMemory(NUMENTITIES);
-    copyHostToDevice(NUMENTITIES);
+    initDeviceMemory();
+    copyHostToDevice();
 
     // Main simulation loop: all heavy work is in GPU compute()
     // compute() is assumed to be the CUDA step we wrote earlier:
@@ -177,7 +179,7 @@ int main(int argc, char **argv)
     }
 
     // Bring final state back to host
-    copyDeviceToHost(NUMENTITIES);
+    copyDeviceToHost();
 
     clock_t t1 = clock() - t0;
 
